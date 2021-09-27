@@ -8,15 +8,17 @@
   },
   "_moduleAliases": {
     "@instances": "preload",
-    "@models": "Models",
-    "@controllers": "Controllers",
+    "@models": "app/Models",
+    "@controllers": "app/ontrollers",
     "@listeners": "app/listeners",
-    "@config": "app/config"
+    "@config": "config",
+    "@mixins": "app/Mixins"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "ip": "^1.1.5",
     "module-alias": "^2.2.2",
     "socket.io": "^3.1.2",
     "tuyapi": "github:codetheweb/tuyapi"

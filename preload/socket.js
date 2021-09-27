@@ -4,7 +4,7 @@ const IO = require('socket.io')(server, {
         origin: '*'
     }
 })
-const config = require('../app/config/socket.json')
+const config = require('../config/socket.json')
 
 const fs = require("fs").promises
 

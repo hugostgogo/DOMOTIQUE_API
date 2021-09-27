@@ -1,5 +1,4 @@
 {
-    "port": 3000,
     "listeners": {
         "path": "C:/Users/HUGO/Desktop/node-server/API/app/listeners/socket/connection/"
     }

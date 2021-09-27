@@ -1,5 +1,5 @@
 {
-    "port": 3000,
+    "port": 80,
     "listeners": {
         "path": "C:/Users/HUGO/Desktop/node-server/API/app/listeners/express/"
     }

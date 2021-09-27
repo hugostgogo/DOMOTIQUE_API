@@ -4,9 +4,10 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 
-const config = require('../app/config/express')
+const config = require('../config/express')
 
 const fs = require("fs").promises
+var ip = require("ip");
 
 const basePath = config.listeners.path
 const methods = ['get', 'post', 'put', 'delete']
@@ -41,7 +42,7 @@ async function loadDirectory(dir) {
 
 loadDirectory(basePath)
 server.listen(config.port, (args) => {
-    console.log('EXPRESS LOADED')
+    console.log('EXPRESS LOADED', `http://${ip.address()}:${config.port}`)
 });
 
 

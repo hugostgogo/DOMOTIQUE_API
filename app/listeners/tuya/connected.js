@@ -1,10 +1,7 @@
-const DevicesController = require('../../../Controllers/DevicesController')
+const DevicesController = require('@instances/tuya')
 
-module.exports = async (device, name) => {
-    console.log("\x1b[32m", `CONECTED to ${name} ${device.device.ip}:${device.device.port}`, "\x1b[37m")
-    if (DevicesController.devices.length == device.foundDevices.length) {
-
-        console.log("\x1b[32m", `*** ALL TUYA DEVICES CONNECTED (${DevicesController.devices.length}) ***`)
-        console.log(            `-----------------------------------------`, "\x1b[37m")
-    }
+module.exports = async (apiDevice, name) => {
+    const device = DevicesController.getByTuyaId(apiDevice.device.id)
+    device.init()
+    console.log("\x1b[32m", `CONECTED to ${device.name} ${apiDevice.device.ip}:${apiDevice.device.port}`, "\x1b[37m")
 }

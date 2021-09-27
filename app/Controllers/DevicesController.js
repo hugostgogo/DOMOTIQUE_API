@@ -1,9 +1,9 @@
-const config = require('../config/tuya.json')
+const config = require('../../config/tuya.json')
 
 const basePath = config.listeners.path
 const devicesConfig = config.devices
 
-const Device = require('../Models/Device')
+const Light = require('@models/Light')
 
 
 class DevicesController {
@@ -11,8 +11,8 @@ class DevicesController {
         let devices = []
 
         // load Events
-        devicesConfig.forEach(async (device, i) => {
-            devices.push(new Device(device, i+1))
+        devicesConfig.lights.forEach(async (device, i) => {
+            devices.push(new Light(device, i+1))
         })
 
         this.devices = devices
@@ -49,12 +49,15 @@ class DevicesController {
         })
     }
 
-    async setColor (color, id = null) {
-        console.log(color, id ? 'single' : 'multi', id)
-        if (id != null) this.get(id).setColor(color)
-        else this.devices.forEach(async (device) => {
-            device.setColor(color)
+    async setColor (r, g, b) {
+        let result = []
+
+        this.devices.forEach(async (device) => {
+            const response = await device.setColor(r, g, b)
+            result.push(response)
         })
+
+        return result
     }
 }
 
