@@ -7,15 +7,22 @@
             {
                 "name": "SALLE",
                 "credentials": {
-                    "id": "9b4d934a6a084ea1d79iv8",
-                    "key": "4c5ff1139277d9c7"
+                    "id": "bf3f795fca8b14cdd1wihx",
+                    "key": "40a35f86ef397265"
                 }
             },
             {
                 "name": "SALON",
                 "credentials": {
-                    "id": "9bf8260d22f4e72da6xqko",
-                    "key": "d6fcf31982c8913d"
+                    "id": "bfeff46978162df65afier",
+                    "key": "82e35aa091357d4d"
+                }
+            },
+            {
+                "name": "ENTREE",
+                "credentials": {
+                    "id": "bf09b4cc30c09842c5ifqp",
+                    "key": "cf0d72e430e0aa86"
                 }
             }
         ]
