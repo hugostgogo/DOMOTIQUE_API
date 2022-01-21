@@ -9,7 +9,7 @@ const config = require('../config/express')
 const fs = require("fs").promises
 var ip = require("ip");
 
-const basePath = config.listeners.path
+const basePath = process.basePath + config.listeners.path
 const methods = ['get', 'post', 'put', 'delete']
 
 async function loadDirectory(dir) {

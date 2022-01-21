@@ -4,7 +4,7 @@ const TuyaAPI = require('tuyapi');
 const fs = require("fs").promises
 
 const config = require('../../config/tuya.json')
-const basePath = config.listeners.path
+const basePath = process.basePath + config.listeners.path
 
 class Device {
 
@@ -27,7 +27,7 @@ class Device {
             issueGetOnConnect: false
         })
 
-        device.find().then(async () => {
+        device.find().then(async() => {
             device.connect();
         });
 
@@ -44,7 +44,7 @@ class Device {
         return this
     }
 
-    get device () {
+    get device() {
         return this.#device
     }
 

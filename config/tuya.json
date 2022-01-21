@@ -1,10 +1,9 @@
 {
     "listeners": {
-        "path": "C:/Users/HUGO/Desktop/node-server/API/app/listeners/tuya/"
+        "path": "/app/listeners/tuya/"
     },
     "devices": {
-        "lights": [
-            {
+        "lights": [{
                 "name": "SALLE",
                 "credentials": {
                     "id": "bf3f795fca8b14cdd1wihx",
