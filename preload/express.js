@@ -1,5 +1,11 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
+
+app.use(cors({
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}))
 
 const http = require('http');
 const server = http.createServer(app);
@@ -27,7 +33,7 @@ async function loadDirectory(dir) {
             if (name.endsWith('id')) name = name.slice(0, -2) + ':id'
 
             methods.forEach(async (method) => {
-                
+
                 if (listener[method]) {
                     console.log(`${method.toUpperCase()} ${name}`)
                     app[method](`${name}`, listener[method].bind())
