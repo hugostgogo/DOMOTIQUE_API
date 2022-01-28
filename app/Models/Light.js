@@ -12,6 +12,7 @@ class Light {
 
     id;
     name;
+    connected;
 
     stats = {
         color: null,
@@ -31,6 +32,7 @@ class Light {
 
         this.id = credentials.id
         this.name = name
+        this.connected = false
 
         this.#device = new TuyaAPI({
             id: credentials.id,
@@ -43,15 +45,18 @@ class Light {
             const { dps } = await this.#device.get({ schema: true })
             this.schemaToAttrs(dps)
             IO.emit('LIGHT', this)
+            
         })
 
         this.#device.on('data', async ({ dps }, commandByte) => {
             if (commandByte == 8) this.schemaToAttrs(dps)
+            console.log('DATA',this.name, dps)
             IO.emit('LIGHT', this)
         })
 
         this.#device.on('dp-refresh', ({ dps }, commandByte) => {
             if (commandByte == 8) this.schemaToAttrs(dps)
+            console.log('DP-REFRESH', this.name, dps)
             IO.emit('LIGHT', this)
         });
 
@@ -61,8 +66,8 @@ class Light {
     }
 
     async connect() {
-        await this.#device.find();
-        await this.#device.connect();
+        const find = await this.#device.find();
+        this.connected = await this.#device.connect();
 
         const { dps } = await this.#device.refresh({ schema: true })
         this.schemaToAttrs(dps)

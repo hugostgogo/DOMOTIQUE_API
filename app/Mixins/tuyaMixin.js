@@ -1,4 +1,5 @@
 const { defaultMaxListeners } = require("tuyapi")
+var tinycolor = require("tinycolor2");
 
 const tuyaToRgba = (tuyaColorCode) => ({
 
@@ -29,16 +30,23 @@ const hexToValue = (hex) => {
     return parseInt(hex, 16)
 }
 
-const valueToHex = (value) => {
-    return value.toString(16)
+const valueToHex = (value, pad) => {
+    return value.toString(16).toLowerCase().padStart(pad, '0')
 }
 
-const rgbToTuya = ({ r, g, b }) => {
-    return `${valueToHex(r)}${valueToHex(g)}${valueToHex(b)}0000FFFF`
+const rgbToTuya = (rgb) => {
+    let color = tinycolor(rgb)
+
+    const h = parseInt(color.toHsv().h)
+    const { r, g, b } = color.toRgb()
+
+    return `${valueToHex(r, 2)}${valueToHex(g, 2)}${valueToHex(b, 2)}${valueToHex(h, 4)}ffff`
 }
+
+
 
 module.exports = {
     tuyaToRgba,
     rgbaToComputeds,
-    rgbToTuya
+    rgbToTuya,
 }
