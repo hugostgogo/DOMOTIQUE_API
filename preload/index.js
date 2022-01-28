@@ -1,4 +1,3 @@
-require('./express.js')
 require('./tuya.js')
+require('./express.js')
 require('./socket.js')
-require('./ledstrips.js')

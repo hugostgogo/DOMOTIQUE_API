@@ -5,8 +5,10 @@ const devicesConfig = config.devices
 
 const Light = require('@models/Light')
 
-
 class DevicesController {
+
+    devices;
+
     constructor () {
         let devices = []
 
@@ -18,46 +20,34 @@ class DevicesController {
         this.devices = devices
     }
 
-    get (id) {
-        let result;
-        if (id) result = this.devices.find(device => device.id == id)
-        else if (!id) result = this.devices
-
-        return result
+    set devices (val) {
+        this.devices = val
     }
 
-    async getValues (id) {
-        let result;
-        if (id) result = await this.get(id).getValues()
-        else result = this.get().map(async (device) => { return await device.getValues() })
-
-        return result
+    get devices () {
+        return this.devices.map(device => device.reload())
     }
 
-    getByTuyaId (tuyaId) {
-        let result;
-        if (tuyaId) result = this.devices.find(device => device.tuyaID == tuyaId)
-        else result = false
-
-        return result
+    async get (id = null) {
+        if (id == null) return this.devices;
+        else if (Array.isArray(id)) return this.devices.filter(device => device.id in id);
+        else return this.devices.find(device => device.id == id)
     }
 
     async toggle (id = null) {
-        if (id != null) this.get(id).toggle()
-        else this.devices.forEach(async (device) => {
-            device.toggle()
-        })
+        const isSingle = !Array.isArray(id) && id !== null
+        const toToggle = isSingle ? await this.get(id) : await this.get();
+
+        if (isSingle) return await toToggle.toggle()
+        else return await toToggle.map(async light => await light.toggle())        
     }
 
-    async setColor (r, g, b) {
-        let result = []
-
-        this.devices.forEach(async (device) => {
-            const response = await device.setColor(r, g, b)
-            result.push(response)
-        })
-
-        return result
+    async setRGB (rgb, id = null) {
+        const isSingle = (!Array.isArray(id) && id !== null)
+        const toSet = isSingle ? await this.get(id) : await this.get();
+        
+        if (isSingle) return await toSet.setRGB(rgb)
+        else return await toSet.map(async light => await light.setRGB(rgb))
     }
 }
 

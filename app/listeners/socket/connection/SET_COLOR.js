@@ -1,6 +1,5 @@
 const DevicesController = require('@instances/tuya')
 
-module.exports = async (socket, payload) => {
-    const device = DevicesController.get(payload.id)
-    await device.setColor(payload.color)
+module.exports = async (socket, IO, payload) => {
+    await DevicesController.setRGB(payload.rgb, payload.id)
 }

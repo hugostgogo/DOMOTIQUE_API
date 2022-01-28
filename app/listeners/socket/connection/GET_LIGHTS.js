@@ -1,8 +1,6 @@
 const DevicesController = require('@instances/tuya')
 
-module.exports = async (socket) => {
-    const devices = DevicesController.get()
-
-    console.log(devices.state)
-    socket.emit('LIGHTS', devices)
+module.exports = async (socket, IO, payload) => {
+    const lights = await DevicesController.get()
+    socket.emit('LIGHTS', lights)
 }

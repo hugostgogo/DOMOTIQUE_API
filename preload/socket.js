@@ -8,7 +8,7 @@ const config = require('../config/socket.json')
 
 const fs = require("fs").promises
 
-const basePath = config.listeners.path
+const basePath = process.basePath + config.listeners.path
 
 
 IO.on('connection', async (socket) => {
@@ -17,9 +17,13 @@ IO.on('connection', async (socket) => {
         const name = file.slice(0, -3)
         var listener = require(`${basePath + file}`)
 
-        socket.on(`${name}`, listener.bind(null, socket))
+        socket.on(`${name}`, listener.bind(null, socket, IO))
     })
 
 });
 
 console.log('SOCKET IO LOADED')
+
+module.exports = {
+    IO
+}

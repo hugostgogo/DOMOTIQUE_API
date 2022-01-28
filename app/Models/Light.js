@@ -1,63 +1,99 @@
 require('module-alias/register')
+const TuyaAPI = require('tuyapi')
+const { IO } = require('../../preload/socket')
 
-const ColorsMixin = require('@mixins/colors')
+const {
+    tuyaToRgba,
+    rgbaToComputeds,
+    rgbToTuya
+} = require('../Mixins/tuyaMixin')
 
-const Device = require('@models/Device')
+class Light {
 
-class Light extends Device {
+    id;
+    name;
 
-    mode;
-    brightness;
-    saturation;
-    color;
+    stats = {
+        color: null,
+        state: null,
+        mode: null,
+        brightness: null,
+        temperature: null
+    };
 
     #device;
 
-    constructor(args, id) {
-        super(args, id);
-        this.#device = super.device
-    }
+    constructor(tuyaDevice, id) {
+        const {
+            name,
+            credentials
+        } = tuyaDevice
 
-    async init() {
-        this.connected = true;
-        const attrs = await this.#device.get({ schema: true })
+        this.id = credentials.id
+        this.name = name
 
-        this.state = attrs.dps['1']
-        this.mode = attrs.dps['2']
-        this.brightness = attrs.dps['3']
-        this.saturation = attrs.dps['4']
-        this.color = attrs.dps['5']
-
-        return this
-    }
-
-    get state() {
-        return (async () => { await this.#device.get() ? true : false })
-    }
-
-    async toggle() {
-        this.state = await this.#device.toggle()
-        return this
-    }
-
-    async setColor(r, g, b) {
-        const h = ColorsMixin.rgbToHex(r,g,b) // 3
-        const s = 'ff' // 2
-        const v = 'ff'// 2
-
-        console.log("hue", `${h}`)
-        const result = await this.#device.set({
-            multiple: true,
-            data: {
-                '1': true,
-                '2': 'colour',
-                '5': `0000000${h}${s}${v}` // L 14
-            }
+        this.#device = new TuyaAPI({
+            id: credentials.id,
+            key: credentials.key,
+            issueGetOnConnect: false
         })
-     
 
-        return result
+        this.#device.on('connected', async () => {
+            console.log(`CONNECTED TO ${this.name}`)
+            const { dps } = await this.#device.get({ schema: true })
+            this.schemaToAttrs(dps)
+            IO.emit('LIGHT', this)
+        })
+
+        this.#device.on('data', async ({ dps }, commandByte) => {
+            if (commandByte == 8) this.schemaToAttrs(dps)
+            IO.emit('LIGHT', this)
+        })
+
+        this.#device.on('dp-refresh', ({ dps }, commandByte) => {
+            if (commandByte == 8) this.schemaToAttrs(dps)
+            IO.emit('LIGHT', this)
+        });
+
+        this.connect()
+
+        return this
     }
+
+    async connect() {
+        await this.#device.find();
+        await this.#device.connect();
+
+        const { dps } = await this.#device.refresh({ schema: true })
+        this.schemaToAttrs(dps)
+    }
+
+    async reload () {
+        const { dps } = await this.#device.refresh({ schema: true })
+        return this.schemaToAttrs(dps)
+    }
+
+    schemaToAttrs(schema) {
+        if ('1' in schema) this.stats.state = schema['1']
+        if ('2' in schema) this.stats.mode = schema['2']
+        if ('3' in schema) this.stats.brightness = schema['3']
+        if ('4' in schema) this.stats.temperature = schema['4']
+        if ('5' in schema) this.stats.color = rgbaToComputeds(tuyaToRgba(schema['5']))
+
+        return this
+    }
+
+
+    async toggle () {
+        const { dps } = await this.#device.set({ dps: 1, set: !this.stats.state })
+        return this.schemaToAttrs(dps)
+    }
+
+    async setRGB (rgb) {
+        const { dps } = await this.#device.set({ dps: 5, set: rgbToTuya(rgb) })
+        return this.schemaToAttrs(dps)
+    }
+
 }
 
 module.exports = Light
